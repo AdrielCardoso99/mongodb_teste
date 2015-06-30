@@ -55,6 +55,7 @@
                             </a>
 
                         </div>
+
                     </div>
 
                     <div class="fixed-action-btn" style="bottom: 45px; right: 24px;">
@@ -67,14 +68,20 @@
                     </div>
 
                     <div class="input-field col s12" ng-hide="inputComentar" ng-click="permisaoSemaforo()">
-                        <textarea id="textarea1" class="materialize-textarea"></textarea>
+                        <textarea ng-model="decricao" class="materialize-textarea"></textarea>
                         <label for="textarea1">Textarea</label>
 
-                        <button ng-click="salvarMensagem(this)" style="float: right; right: 0;margin: 10px;" class="btn waves-effect waves-light" type="submit" name="action">
+                        <button ng-click="salvarMensagem(this, single.token)" style="float: right; right: 0;margin: 10px;" class="btn waves-effect waves-light" type="submit" name="action">
                             <i class="material-icons">send</i>
                         </button>
-                        
+
                         <div style="clear: both;"></div>
+                    </div>
+
+                    <div class="input-field col m12">
+                        <ul class="collection" ng-repeat="unique in single.comentarios">
+                            <li class="collection-item">{{ unique}}</li>
+                        </ul>
                     </div>
 
                 </div>

@@ -31,7 +31,7 @@ angular.module('LoginFactoryModule', ['ngRoute', 'ConfigFactoryModule'])
 
                     $http({
                         method: "post",
-                        url: "http://localhost/mongodb/",
+                        url: "http://localhost/mongodb_teste/",
                         data: "action=user&action_args=isUser",
                         headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                             .success(function (data) {

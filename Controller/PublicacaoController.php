@@ -15,6 +15,8 @@ Class PublicacaoController {
                 break;
             case "remover": self::removerAction();
                 break;
+            case "comentario": self::comentarioAction();
+                break;
         }
     }
 
@@ -37,6 +39,51 @@ Class PublicacaoController {
         RotaController::res($obj);
     }
 
+    public static function comentarioAction() {
+
+        $temp = DBController::init();
+        $publicacao = $temp->db_publicacao;
+
+        if (empty($_POST['token']) == false && empty($_POST['comentario']) == false) {
+            foreach (iterator_to_array($publicacao->find(['_id' => new MongoId($_POST['token'])])) as $value) {
+
+                $value['comentarios'][count($value['comentarios'])] = $_POST['comentario'];
+                
+                $cursor2 = $publicacao->update(
+                        Array(
+                    '_id' => new MongoId($_POST['token'])), Array(
+                    "naoCurtir" => $value['naoCurtir'],
+                    "curtir" => $value['curtir'],
+                    "comentarios" => $value['comentarios'],
+                    "user_token" => $value['user_token'],
+                    "post" => $value['post'],
+                    "data" => $value["data"]));
+
+                if ($cursor2['ok'] != true) {
+
+                    $obj = Array(
+                        'status' => false,
+                        'message' => "Erro ao salvar o comentário tente novamente",
+                    );
+                } else {
+
+                    $obj = Array(
+                        'status' => true,
+                        'message' => "Comentário feito com sucesso",
+                    );
+                }
+            }
+        } else {
+
+            $obj = Array(
+                'status' => false,
+                'message' => "Erro ao comentar, tente atualizar a sua página",
+            );
+        }
+
+        RotaController::res($obj);
+    }
+
     public static function setCurtir() {
 
         $temp = DBController::init();
@@ -48,15 +95,15 @@ Class PublicacaoController {
             $status = true;
 
             foreach ($value['curtir'] as $parseCurtir) {
-                
+
                 if ($parseCurtir == $user['token']) {
                     $status = false;
                 }
 
                 $obj[] = $parseCurtir;
             }
-            
-            if($status == true){
+
+            if ($status == true) {
                 $obj[] = $user['token'];
             }
 
@@ -87,7 +134,7 @@ Class PublicacaoController {
 
         RotaController::res($obj);
     }
-    
+
     public static function setNaoCurtir() {
 
         $temp = DBController::init();
@@ -99,15 +146,15 @@ Class PublicacaoController {
             $status = true;
 
             foreach ($value['naoCurtir'] as $parseCurtir) {
-                
+
                 if ($parseCurtir == $user['token']) {
                     $status = false;
                 }
 
                 $obj[] = $parseCurtir;
             }
-            
-            if($status == true){
+
+            if ($status == true) {
                 $obj[] = $user['token'];
             }
 
@@ -144,7 +191,7 @@ Class PublicacaoController {
         $res = Array();
         $temp = DBController::init();
         $publicacao = $temp->db_publicacao;
-
+        
         $user = SessionController::get("user");
 
         $obj = iterator_to_array($publicacao->find());

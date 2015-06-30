@@ -23,7 +23,7 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
 
                 $http({
                     method: "post",
-                    url: "http://localhost/mongodb/",
+                    url: "http://localhost/mongodb_teste/",
                     data: "action=user&action_args=parseLogin&email=" + email + "&senha=" + senha,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                         .success(function (data) {
@@ -60,7 +60,7 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
 
                 $http({
                     method: "post",
-                    url: "http://localhost/mongodb/",
+                    url: "http://localhost/mongodb_teste/",
                     data: "action=user&action_args=new&email=" + email + "&senha=" + senha + "&nome=" + nome,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                         .success(function (data) {
@@ -111,17 +111,35 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
                     initPublicacoes();
                 }
             }, 1000);
-            
-            $scope.salvarMensagem = function($scope){
+
+            $scope.salvarMensagem = function (elem, token) {
+
+                semafoto = false;
+
+                var comentario = $(elem)[0].decricao;
                 
-               console.log($scope.$parent);
+                 $http({
+                    method: "post",
+                    url: "http://localhost/mongodb_teste/",
+                    data: "action=publicar&action_args=comentario&token="+token+"&comentario=" + comentario,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+                        .success(function (data) {
+
+                            initPublicacoes();
+
+                            Materialize.toast(data['message'], 4000);
+
+                        })
+                        .error(function (e) {
+                            Materialize.toast("Erro com a conexão com o servidor, tente novamente mais tarde", 4000);
+                        });
             };
 
             $scope.acao_naoCurtir = function (token) {
 
                 $http({
                     method: "post",
-                    url: "http://localhost/mongodb/",
+                    url: "http://localhost/mongodb_teste/",
                     data: "action=publicar&action_args=naocurtir&token=" + token,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                         .success(function (data) {
@@ -141,7 +159,7 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
 
                 $http({
                     method: "post",
-                    url: "http://localhost/mongodb/",
+                    url: "http://localhost/mongodb_teste/",
                     data: "action=publicar&action_args=curtir&token=" + token,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                         .success(function (data) {
@@ -164,7 +182,7 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
 
                 $http({
                     method: "post",
-                    url: "http://localhost/mongodb/",
+                    url: "http://localhost/mongodb_teste/",
                     data: "action=publicar&action_args=remover&token=" + token,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                         .success(function (data) {
@@ -190,7 +208,7 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
 
                 $http({
                     method: "post",
-                    url: "http://localhost/mongodb/",
+                    url: "http://localhost/mongodb_teste/",
                     data: "action=publicar&action_args=new&publicacao=" + publicacao,
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                         .success(function (data) {
@@ -219,7 +237,7 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
 
                 $http({
                     method: "post",
-                    url: "http://localhost/mongodb/",
+                    url: "http://localhost/mongodb_teste/",
                     data: "action=user&action_args=sair",
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                         .success(function (data) {
@@ -243,7 +261,7 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
 
                 $http({
                     method: "post",
-                    url: "http://localhost/mongodb/",
+                    url: "http://localhost/mongodb_teste/",
                     data: "action=publicar&action_args=publicacoes",
                     headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
                         .success(function (data) {
