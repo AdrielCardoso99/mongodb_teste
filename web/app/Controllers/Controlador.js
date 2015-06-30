@@ -90,6 +90,7 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
         .controller('HomeController', function ($scope, LoginFactory, $http, $location) {
 
             var status = false;
+            var semafoto = true;
 
             // verificando se existe credencial
             LoginFactory.isLogin();
@@ -98,12 +99,41 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
             initPublicacoes();
 
             $scope.load = true;
+            $scope.inputComentar = true;
             $scope.cardempty = false;
 
+            $scope.permisaoSemaforo = function () {
+                semafoto = (semafoto === false ? true : false);
+            };
+
+            var refresh = setInterval(function () {
+                if (semafoto === true) {
+                    initPublicacoes();
+                }
+            }, 1000);
+            
+            $scope.salvarMensagem = function($scope){
+                
+               console.log($scope.$parent);
+            };
 
             $scope.acao_naoCurtir = function (token) {
 
-                alert(token);
+                $http({
+                    method: "post",
+                    url: "http://localhost/mongodb/",
+                    data: "action=publicar&action_args=naocurtir&token=" + token,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+                        .success(function (data) {
+
+                            initPublicacoes();
+
+                            Materialize.toast(data['message'], 4000);
+
+                        })
+                        .error(function (e) {
+                            Materialize.toast("Erro com a conexão com o servidor, tente novamente mais tarde", 4000);
+                        });
 
             };
 
@@ -125,15 +155,30 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
                             Materialize.toast("Erro com a conexão com o servidor, tente novamente mais tarde", 4000);
                         });
             };
-            
-            $scope.acao_comentar = function (token) {
 
-                alert(token);
+            $scope.acao_comentar = function (token) {
+                $scope.inputComentar = ($scope.inputComentar === false ? true : false);
             };
-            
+
             $scope.acao_excluir = function (token) {
 
-                alert(token);
+                $http({
+                    method: "post",
+                    url: "http://localhost/mongodb/",
+                    data: "action=publicar&action_args=remover&token=" + token,
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'}})
+                        .success(function (data) {
+
+                            if (data['status'] === true) {
+                                initPublicacoes();
+                            }
+
+                            Materialize.toast(data['message'], 4000);
+
+                        })
+                        .error(function (e) {
+                            Materialize.toast("Erro com a conexão com o servidor, tente novamente mais tarde", 4000);
+                        });
             };
 
             $scope.acao_publicar = function () {
@@ -194,11 +239,6 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
                         });
             };
 
-            var refresh = setInterval(function () {
-
-                initPublicacoes();
-            }, 1000);
-
             function initPublicacoes() {
 
                 $http({
@@ -210,14 +250,17 @@ angular.module('Controlador', ['ngRoute', 'ngError', 'LoginFactoryModule'])
 
                             if (data.length !== 0) {
 
+                                $scope.publicacao_off = false;
+
                                 status = true;
                                 $scope.load = true;
 
                                 $scope.publicacoes = data;
                                 $scope.cardempty = true;
 
-                                clearInterval(refresh);
                             } else {
+
+                                $scope.publicacao_off = true;
 
                                 $scope.cardempty = false;
                             }

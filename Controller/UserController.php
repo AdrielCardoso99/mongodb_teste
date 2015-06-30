@@ -30,20 +30,29 @@ Class UserController extends User {
 
             $temp = DBController::init();
             $usuarios = $temp->db_user;
-
+            
             $all = $usuarios->save(["email" => $email, "senha" => $senha, "nome" => $nome, "publicacao" => Array()]);
 
             if ($all['ok'] == true) {
 
-                $obj = Array(
-                    'nome' => $nome,
-                    'email' => $email,
-                    'senha' => $senha,
-                    'status' => true,
-                    'message' => 'registro feito com sucesso'
-                );
+                $findToken = iterator_to_array($usuarios->find(['email' => $email]));
 
+                foreach ($findToken as $key => $value) {
+
+                    $obj = Array(
+                        'token' => $key,
+                        'nome' => $nome,
+                        'email' => $email,
+                        'senha' => $senha,
+                        'status' => true,
+                        'message' => 'registro feito com sucesso'
+                    );
+                    
+                    break;
+                }
+                
                 SessionController::set("user", $obj);
+                
             } else {
 
                 $obj = Array(
